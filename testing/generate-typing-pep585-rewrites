@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+import os.path
+import sys
+import typing
+
+
+def main() -> int:
+    assert sys.version_info[:2] == (3, 9), sys.version_info
+
+    renames = [
+        f'typing={value.__origin__.__module__}:{name}'
+        for name, value in vars(typing).items()
+        if hasattr(value, '__origin__')
+        # TODO: still can't support symbol renaming
+        if value.__origin__.__name__ == name
+    ]
+
+    print(f'# GENERATED VIA {os.path.basename(sys.argv[0])}')
+    print('TYPING_RENAMES = [')
+    for rename in sorted(renames):
+        print(f'    {rename!r},')
+    print(']')
+    print('# END GENERATED')
+
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())
